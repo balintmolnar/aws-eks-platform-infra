@@ -69,7 +69,7 @@ pipeline {
     post {
         always {
             script {
-                archiveArtifacts artifacts: 'environments/**/*.txt', allowEmptyArchive: true
+                archiveArtifacts artifacts: 'environments/**/tfplan.txt', allowEmptyArchive: true
             }
             deleteDir()
         }
