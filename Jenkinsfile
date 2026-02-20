@@ -49,6 +49,9 @@ pipeline {
                 script {
                     withAWS(region: 'eu-central-1', credentials: 'aws-terraform') {
                         dir("environments/${params.ENVIRONMENT}") {
+                            // logging out of docker to prevent "401: Unauthorized" error when downloading helm charts
+                            sh "docker logout"
+
                             echo "Applying base infrastructure (network, compute)"
                             sh "terraform apply -target=module.network -target=module.compute --auto-approve"
 
