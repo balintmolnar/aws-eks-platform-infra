@@ -1,0 +1,14 @@
+# --- IntelliJ ---
+.idea/*
+
+# --- terraform files ---
+.terraform/*
+*.tfstate
+*.tfstate.backup
+.terraform.lock.hcl
+**/.terraform/*
+
+# --- Logs and temporary files ---
+terraform.tfstate.d/
+errored.tfstate
+crash.log
