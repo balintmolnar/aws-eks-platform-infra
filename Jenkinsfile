@@ -58,7 +58,10 @@ pipeline {
                             echo "Waiting for EKS to be ready"
                             sleep 30
 
-                            echo "Applying remaining modules (security, database, app-config)"
+                            echo "Applying database and security modules"
+                            sh "terraform apply -target=module.database -target=module.security --auto-approve"
+
+                            echo "Applying app-config module"
                             sh "terraform apply --auto-approve"
                         }
                     }
