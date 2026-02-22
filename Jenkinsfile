@@ -14,7 +14,7 @@ pipeline {
                 script {
                     echo "Chosen environment: ${params.ENVIRONMENT}"
                     withAWS(region: 'eu-central-1', credentials: 'aws-terraform') {
-                        dir("environment/${params.ENVIRONMENT}") {
+                        dir("environments/${params.ENVIRONMENT}") {
                             sh "terraform init"
                         }
                     }
@@ -26,7 +26,7 @@ pipeline {
             steps {
                 script {
                     withAWS(region: 'eu-central-1', credentials: 'aws-terraform') {
-                        dir("environment/${params.ENVIRONMENT}") {
+                        dir("environments/${params.ENVIRONMENT}") {
                             sh "terraform plan -target=module.network -target=module.compute -out=tfplan"
                             sh "terraform show -no-color tfplan > tfplan.txt"
                         }
@@ -48,14 +48,20 @@ pipeline {
             steps {
                 script {
                     withAWS(region: 'eu-central-1', credentials: 'aws-terraform') {
-                        dir("environment/${params.ENVIRONMENT}") {
+                        dir("environments/${params.ENVIRONMENT}") {
+                            // logging out of docker to prevent "401: Unauthorized" error when downloading helm charts
+                            sh "docker logout"
+
                             echo "Applying base infrastructure (network, compute)"
                             sh "terraform apply -target=module.network -target=module.compute --auto-approve"
 
                             echo "Waiting for EKS to be ready"
                             sleep 30
 
-                            echo "Applying remaining modules (security, database, app-config)"
+                            echo "Applying database and security modules"
+                            sh "terraform apply -target=module.database -target=module.security --auto-approve"
+
+                            echo "Applying app-config module"
                             sh "terraform apply --auto-approve"
                         }
                     }
@@ -66,7 +72,7 @@ pipeline {
     post {
         always {
             script {
-                archiveArtifacts artifacts: 'environment/**/*.txt', allowEmptyArchive: true
+                archiveArtifacts artifacts: 'environments/**/tfplan.txt', allowEmptyArchive: true
             }
             deleteDir()
         }
