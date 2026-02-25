@@ -31,6 +31,7 @@ module "eks" {
     webapi_group = {
       ami_type = var.ami_type
       instance_types = var.instance_types
+      node_group_name = "webapi-group-${var.env_prefix}"
 
       min_size = 2
       max_size = 3
