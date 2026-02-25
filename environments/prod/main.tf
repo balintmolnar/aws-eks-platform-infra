@@ -39,3 +39,10 @@ module "app-config" {
   db_secret_name = module.security.db_secret_name
   external_secrets_operator = module.security.external_secrets_operator
 }
+
+module "load-balancing" {
+  source = "../../modules/load-balancing"
+  cluster_certificate_authority_data = module.compute.cluster_certificate_authority_data
+  cluster_endpoint = module.compute.cluster_endpoint
+  cluster_name = module.compute.cluster_name
+}
