@@ -71,3 +71,22 @@ resource "aws_eks_pod_identity_association" "ebs_csi" {
   role_arn        = aws_iam_role.ebs_csi_pod_identity.arn
   service_account = "ebs-csi-controller-sa"
 }
+
+# Access entry for Jenkins user
+resource "aws_eks_access_entry" "jenkins_access_entry" {
+  cluster_name      = module.eks.cluster_name
+  principal_arn     = "arn:aws:iam::957478052151:user/jenkins-deployer"
+  type              = "STANDARD"
+}
+
+# Access policy association for Jenkins user
+resource "aws_eks_access_policy_association" "jenkins_access_policy_association" {
+  cluster_name  = module.eks.cluster_name
+  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSAdminPolicy"
+  principal_arn = "arn:aws:iam::957478052151:user/jenkins-deployer"
+
+  access_scope {
+    type = "namespace"
+    namespaces = ["dotnet-app"]
+  }
+}
