@@ -27,7 +27,7 @@ pipeline {
                 script {
                     withAWS(region: 'eu-central-1', credentials: 'aws-terraform') {
                         dir("environments/${params.ENVIRONMENT}") {
-                            sh "terraform plan -target=module.network -target=module.compute -out=tfplan"
+                            sh "terraform plan -var=exclude_secret_store=true -out=tfplan"
                             sh "terraform show -no-color tfplan > tfplan.txt"
                         }
                     }
