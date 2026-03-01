@@ -26,7 +26,7 @@ resource "helm_release" "external_secrets_operator" {
   create_namespace = true
   repository = "https://charts.external-secrets.io"
 
-  depends_on = [var.cluster_name]
+  depends_on = [var.eks_initialization]
 }
 
 # IAM role for external secrets operator

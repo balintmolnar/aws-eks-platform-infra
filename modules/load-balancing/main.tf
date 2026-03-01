@@ -4,7 +4,7 @@ resource "helm_release" "nginx" {
   namespace = "ingress-nginx"
   create_namespace = true
   repository = "https://kubernetes.github.io/ingress-nginx"
-  depends_on = [var.cluster_name]
+  depends_on = [var.eks_initialization]
 
   values = [
     yamlencode({

@@ -29,7 +29,7 @@ resource "helm_release" "postgreSQL" {
   ]
 
   depends_on = [
-    var.cluster_name,
+    var.eks_initialization,
     kubernetes_namespace_v1.database
   ]
 
@@ -45,7 +45,7 @@ resource "kubernetes_storage_class_v1" "ebs-sc" {
     name = "ebs-sc"
   }
 
-  depends_on = [var.cluster_name]
+  depends_on = [var.eks_initialization]
 }
 
 resource "kubernetes_namespace_v1" "database" {
@@ -57,4 +57,6 @@ resource "kubernetes_namespace_v1" "database" {
       terraform = "true"
     }
   }
+
+  depends_on = [var.eks_initialization]
 }

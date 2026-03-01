@@ -40,6 +40,11 @@ module "eks" {
   }
 }
 
+resource "time_sleep" "wait_for_eks_initialization" {
+  depends_on = [module.eks]
+  create_duration = "60s"
+}
+
 # IAM role for the EBS CSI addon
 resource "aws_iam_role" "ebs_csi_pod_identity" {
   name = "ebs-csi-pod-identity-role-${var.env_prefix}"

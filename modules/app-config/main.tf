@@ -7,9 +7,12 @@ resource "kubernetes_namespace_v1" "dotnet-app" {
       terraform = "true"
     }
   }
+
+  depends_on = [var.eks_initialization]
 }
 
 resource "kubernetes_manifest" "aws_secret_store" {
+  count = var.exclude_secret_store ? 0 : 1
   manifest = {
     apiVersion = "external-secrets.io/v1"
     kind = "SecretStore"
@@ -28,13 +31,14 @@ resource "kubernetes_manifest" "aws_secret_store" {
   }
 
   depends_on = [
-    var.cluster_name,
+    var.eks_initialization,
     var.external_secrets_operator,
     kubernetes_namespace_v1.dotnet-app
   ]
 }
 
 resource "kubernetes_manifest" "postgres_external_secret" {
+  count = var.exclude_secret_store ? 0 : 1
   manifest = {
     apiVersion = "external-secrets.io/v1"
     kind = "ExternalSecret"

@@ -21,6 +21,7 @@ module "database" {
   cluster_endpoint = module.compute.cluster_endpoint
   cluster_name = module.compute.cluster_name
   db_password_secret_string = module.security.db_password_secret_string
+  eks_initialization = module.compute.eks_initialization
 }
 
 module "security" {
@@ -29,6 +30,7 @@ module "security" {
   cluster_endpoint = module.compute.cluster_endpoint
   cluster_name = module.compute.cluster_name
   env_prefix = var.env_prefix
+  eks_initialization = module.compute.eks_initialization
 }
 
 module "app-config" {
@@ -38,6 +40,8 @@ module "app-config" {
   cluster_name = module.compute.cluster_name
   db_secret_name = module.security.db_secret_name
   external_secrets_operator = module.security.external_secrets_operator
+  eks_initialization = module.compute.eks_initialization
+  exclude_secret_store = var.exclude_secret_store
 }
 
 module "load-balancing" {
@@ -45,4 +49,5 @@ module "load-balancing" {
   cluster_certificate_authority_data = module.compute.cluster_certificate_authority_data
   cluster_endpoint = module.compute.cluster_endpoint
   cluster_name = module.compute.cluster_name
+  eks_initialization = module.compute.eks_initialization
 }
