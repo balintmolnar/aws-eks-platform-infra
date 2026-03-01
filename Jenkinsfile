@@ -52,16 +52,10 @@ pipeline {
                             // logging out of docker to prevent "401: Unauthorized" error when downloading helm charts
                             sh "docker logout"
 
-                            echo "Applying base infrastructure (network, compute)"
-                            sh "terraform apply -target=module.network -target=module.compute --auto-approve"
+                            echo "Applying everything except secret store"
+                            sh "terraform apply -var=exclude_secret_store=true --auto-approve"
 
-                            echo "Waiting for EKS to be ready"
-                            sleep 30
-
-                            echo "Applying database and security modules"
-                            sh "terraform apply -target=module.database -target=module.security --auto-approve"
-
-                            echo "Applying app-config module"
+                            echo "Apply secret store"
                             sh "terraform apply --auto-approve"
                         }
                     }

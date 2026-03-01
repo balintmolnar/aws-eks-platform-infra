@@ -4,3 +4,4 @@ variable "public_subnet_cidr_blocks" {}
 variable "env_prefix" {}
 variable ami_type {}
 variable instance_types {}
+variable exclude_secret_store {}

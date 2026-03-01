@@ -231,8 +231,7 @@ To set up the 'dev' environment:
 ``` 
 cd ../environments/dev/
 terraform init
-terraform apply -target=module.network -target=module.compute
-terraform apply -target=module.security -target=module.database
+terraform apply -var=exclude_secret_store=true
 terraform apply
 ```
 
@@ -241,15 +240,21 @@ terraform apply
 ### Native state locking support
 
 - **Problem:** An unlocked state file could lead to parallel executions and state file corruption.
-- **Solution:** From version 1.10.0, Terraform supports native state locking with AWS S3. The _use_lockfile_ parameter had to be set to use it.
+- **Solution:** From version 1.10.0, Terraform supports native state locking with AWS S3. The `use_lockfile` parameter had to be set to use it.
 
 ### EKS Access
 
 - **Problem:** Jenkins couldn't deploy to the cluster.
 - **Root cause:** It didn't have the necessary access permissions to deploy elements to the cluster. 
-- **Solution:** The _AmazonEKSAdminPolicy_ access policy has been assigned to Jenkins' AWS user (restricted to one namespace).
+- **Solution:** The `AmazonEKSAdminPolicy` access policy has been assigned to Jenkins' AWS user via a `aws_eks_access_policy_association` resource (restricted to one namespace).
 
 ### Helm release syntax
 
 - **Problem:** Special characters like backslashes made it difficult to set Helm chart values in Terraform.
-- **Solution:** The 'yamlencode' block solved the problem.
+- **Solution:** The `yamlencode` block solved the problem (see _modules/load-balancing/main.tf_).
+
+### EKS Access #2
+
+- **Problem:**  During a `terraform apply`, execution failed because the _terraform-deployer_ AWS user didn't have permissions to create Kubernetes namespaces or storage classes. Which was strange because the `enable_cluster_creator_admin_permissions` had already been set to true.
+- **Root cause:** EKS wasn't quick enough to propagate the access permissions into the Kubernetes RBAC settings. Terraform was notified that the EKS cluster is ready, and tried to install the K8s resources, but its permissions were not yet known to K8s.
+- **Solution:** Implemented a `time_sleep` resource of 60 seconds after the EKS cluster is finished, to allow sufficient time for the access permissions to be propagated.
