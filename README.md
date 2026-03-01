@@ -27,6 +27,7 @@ Infrastructure as Code (IaC) for AWS EKS using Terraform, featuring External Sec
     * [Native state locking support](#native-state-locking-support)
     * [EKS Access](#eks-access)
     * [Helm release syntax](#helm-release-syntax)
+    * [EKS Access #2](#eks-access-2)
 <!-- TOC -->
 
 ## Project overview
@@ -246,7 +247,7 @@ terraform apply
 
 - **Problem:** Jenkins couldn't deploy to the cluster.
 - **Root cause:** It didn't have the necessary access permissions to deploy elements to the cluster. 
-- **Solution:** The `AmazonEKSAdminPolicy` access policy has been assigned to Jenkins' AWS user via a `aws_eks_access_policy_association` resource (restricted to one namespace).
+- **Solution:** The `AmazonEKSAdminPolicy` access policy has been assigned to Jenkins' AWS user via an `aws_eks_access_policy_association` resource (restricted to one namespace).
 
 ### Helm release syntax
 
