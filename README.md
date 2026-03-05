@@ -4,6 +4,7 @@ Infrastructure as Code (IaC) for AWS EKS using Terraform, featuring External Sec
 
 <!-- TOC -->
 * [AWS EKS Infrastructure with Terraform](#aws-eks-infrastructure-with-terraform)
+  * [▶️ Demo Video](#-demo-video)
   * [Project overview](#project-overview)
   * [.NET Web API](#net-web-api)
   * [🪣 State file storage](#-state-file-storage)
@@ -28,7 +29,14 @@ Infrastructure as Code (IaC) for AWS EKS using Terraform, featuring External Sec
     * [EKS Access](#eks-access)
     * [Helm release syntax](#helm-release-syntax)
     * [EKS Access #2](#eks-access-2)
+    * [Helm chart version](#helm-chart-version)
 <!-- TOC -->
+
+## ▶️ Demo Video
+
+[![Project Demo Video](https://img.youtube.com/vi/4tzzKOdlodE/0.jpg)](https://youtu.be/4tzzKOdlodE)
+
+*Please click on the image to watch the video*
 
 ## Project overview
 
@@ -259,3 +267,12 @@ terraform apply
 - **Problem:**  During a `terraform apply`, execution failed because the _terraform-deployer_ AWS user didn't have permissions to create Kubernetes namespaces or storage classes. Which was strange because the `enable_cluster_creator_admin_permissions` had already been set to true.
 - **Root cause:** EKS wasn't quick enough to propagate the access permissions into the Kubernetes RBAC settings. Terraform was notified that the EKS cluster is ready, and tried to install the K8s resources, but its permissions were not yet known to K8s.
 - **Solution:** Implemented a `time_sleep` resource of 60 seconds after the EKS cluster is finished, to allow sufficient time for the access permissions to be propagated.
+
+### Helm chart version
+
+![Helm provider error](images/Inconsistent-PostgreSQL-version-2026-03-04-123302.png)
+
+- **Problem:** When installing the PostgreSQL helm release, Terraform encountered the "_Provider produced inconsistent final plan_" error.
+- **Root cause:** When planning the execution, Terraform found "_18.5.1_" to be the actual chart version of PostgreSQL. However, when it tried to install it, the actual version was "_18.5.2_". This caused Terraform to stop, as the actual version was different from the one in the plan.
+  - **Likely explanation**: The new version of the PostgreSQL helm chart was released while Terraform was busy setting up the cluster.
+- **Solution:** The helm chart version has been hardcoded into the PostgreSQL helm release resource.
