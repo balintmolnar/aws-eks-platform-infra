@@ -1,5 +1,5 @@
 resource "helm_release" "postgreSQL" {
-  chart = "postgresql"
+  chart = "postgresql:18.5.2"
   name  = "postgresql"
   repository = "oci://registry-1.docker.io/bitnamicharts"
   namespace = "database"
